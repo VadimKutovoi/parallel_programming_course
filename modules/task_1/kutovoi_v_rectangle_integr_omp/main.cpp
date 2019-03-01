@@ -1,4 +1,4 @@
-//Copyright 2019 Kutovoi Vadim
+// Copyright 2019 Kutovoi Vadim
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
