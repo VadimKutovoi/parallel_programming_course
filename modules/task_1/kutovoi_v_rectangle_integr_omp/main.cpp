@@ -1,11 +1,13 @@
-#include <iostream>
-#include <fstream>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <Windows.h>
+#include <iostream>
+#include <fstream>
 #include <algorithm>
-#include <math.h>
+#include <string>
+
 
 
 double middle_rectangle_integral(const double a1, const double b1, const double h);
@@ -23,23 +25,19 @@ inline double f(double x, double y);
 char* getCmdOption(char ** begin, char ** end, const std::string& option);
 bool cmdOptionExists(char** begin, char** end, const std::string& option);
 
-inline double f(double x)
-{
+inline double f(double x) {
     return sin(x);
 }
 
-inline double f(double x, double y)
-{
+inline double f(double x, double y) {
     return sin(x) * cos(y);
 }
 
-double middle_rectangle_integral(const double a1, const double b1, const double h)
-{
+double middle_rectangle_integral(const double a1, const double b1, const double h) {
     double sum = 0;
     double height = 0;
 
-    for (double i = a1; i < b1; i += h)
-    {
+    for (double i = a1; i < b1; i += h) {
         height = f(i + h / 2);
         sum += height * h;
     }
@@ -47,16 +45,13 @@ double middle_rectangle_integral(const double a1, const double b1, const double 
     return sum;
 }
 
-double middle_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h)
-{
+double middle_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h) {
     double sum = 0;
     double height = 0;
     double *heights = new double[4];
 
-    for (double i = a1; i < b1; i += h)
-    {
-        for (double j = a2; j < b2; j += h)
-        {
+    for (double i = a1; i < b1; i += h) {
+        for (double j = a2; j < b2; j += h) {
             height = f(i + h / 2, j + h / 2);
             sum += height * h * h;
         }
@@ -64,13 +59,11 @@ double middle_rectangle_integral(const double a1, const double b1, const double 
     return sum;
 }
 
-double left_rectangle_integral(const double a1, const double b1, const double h)
-{
+double left_rectangle_integral(const double a1, const double b1, const double h) {
     double sum = 0;
     double height = 0;
 
-    for (double i = a1; i < b1; i += h)
-    {
+    for (double i = a1; i < b1; i += h) {
         height = f(i);
         sum += height * h;
     }
@@ -78,30 +71,24 @@ double left_rectangle_integral(const double a1, const double b1, const double h)
     return sum;
 }
 
-double left_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h)
-{
+double left_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h) {
     double sum = 0;
     double height = 0;
     double *heights = new double[4];
 
     for (double i = a1; i < b1; i += h)
-    {
-        for (double j = a2; j < b2; j += h)
-        {
+        for (double j = a2; j < b2; j += h) {
             height = f(i, j);
             sum += height * h * h;
         }
-    }
     return sum;
 }
 
-double right_rectangle_integral(const double a1, const double b1, const double h)
-{
+double right_rectangle_integral(const double a1, const double b1, const double h) {
     double sum = 0;
     double height = 0;
 
-    for (double i = a1; i < b1; i += h)
-    {
+    for (double i = a1; i < b1; i += h) {
         height = f(i);
         sum += height * h;
     }
@@ -109,40 +96,32 @@ double right_rectangle_integral(const double a1, const double b1, const double h
     return sum;
 }
 
-double right_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h)
-{
+double right_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h) {
     double sum = 0;
     double height = 0;
     double *heights = new double[4];
 
     for (double i = a1; i < b1; i += h)
-    {
-        for (double j = a2; j < b2; j += h)
-        {
+        for (double j = a2; j < b2; j += h) {
             height = f(i + h, j + h);
             sum += height * h * h;
         }
-    }
     return sum;
 }
 
-char* getCmdOption(char **begin, char **end, const std::string& option)
-{
+char* getCmdOption(char **begin, char **end, const std::string& option) {
     char **itr = std::find(begin, end, option);
     if (itr != end && ++itr != end)
-    {
         return *itr;
-    }
+    
     return 0;
 }
 
-bool cmdOptionExists(char** begin, char** end, const std::string& option)
-{
+bool cmdOptionExists(char** begin, char** end, const std::string& option) {
     return std::find(begin, end, option) != end;
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     double a1 = 0;
     double b1 = 16;
     double a2 = INFINITY;
@@ -152,42 +131,36 @@ int main(int argc, char *argv[])
     bool verbose = false;
     bool log = false;
 
-    if (cmdOptionExists(argv, argv + argc, "-a1"))
-    {
+    if (cmdOptionExists(argv, argv + argc, "-a1")) {
         char *wcount = getCmdOption(argv, argv + argc, "-a1");
         a1 = atof(wcount);
     }
 
-    if (cmdOptionExists(argv, argv + argc, "-b1"))
-    {
+    if (cmdOptionExists(argv, argv + argc, "-b1")) {
         char *wcount = getCmdOption(argv, argv + argc, "-b1");
         b1 = atof(wcount);
     }
 
-    if (cmdOptionExists(argv, argv + argc, "-a2"))
-    {
+    if (cmdOptionExists(argv, argv + argc, "-a2")) {
         char *wcount = getCmdOption(argv, argv + argc, "-a2");
         a2 = atof(wcount);
     }
 
-    if (cmdOptionExists(argv, argv + argc, "-b2"))
-    {
+    if (cmdOptionExists(argv, argv + argc, "-b2")) {
         char *wcount = getCmdOption(argv, argv + argc, "-b2");
         b2 = atof(wcount);
     }
 
-    if (cmdOptionExists(argv, argv + argc, "-h"))
-    {
+    if (cmdOptionExists(argv, argv + argc, "-h")) {
         char *wcount = getCmdOption(argv, argv + argc, "-h");
         h = atof(wcount);
     }
 
-    if (cmdOptionExists(argv, argv + argc, "-v"))
-    {
+    if (cmdOptionExists(argv, argv + argc, "-v")) {
         verbose = true;
     }
-    if (cmdOptionExists(argv, argv + argc, "-log"))
-    {
+    
+    if (cmdOptionExists(argv, argv + argc, "-log")) {
         log = true;
     }
 
@@ -211,14 +184,12 @@ int main(int argc, char *argv[])
         std::cout << "One dimensional integral counting..." << std::endl;
 
 
-    if (a2 == INFINITY || b2 == INFINITY)
-    {
+    if (a2 == INFINITY || b2 == INFINITY) {
         res_middle = middle_rectangle_integral(a1, b1, h);
         res_left = left_rectangle_integral(a1, b1, h);
         res_right = right_rectangle_integral(a1, b1, h);
     }
-    else
-    {
+    else {
         res_middle = middle_rectangle_integral(a1, b1, a2, b2, h);
         res_left = left_rectangle_integral(a1, b1, a2, b2, h);
         res_right = right_rectangle_integral(a1, b1, a2, b2, h);
