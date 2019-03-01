@@ -112,8 +112,7 @@ double right_rectangle_integral(const double a1, const double b1, const double a
 char* getCmdOption(char **begin, char **end, const std::string& option) {
     char **itr = std::find(begin, end, option);
     if (itr != end && ++itr != end)
-        return *itr;
-    
+        return *itr;   
     return 0;
 }
 
@@ -164,7 +163,6 @@ int main(int argc, char *argv[]) {
         log = true;
     }
 
-
     if (log) std::cout << "Logging into log.txt" << std::endl;
 
     if (verbose) {
@@ -179,17 +177,15 @@ int main(int argc, char *argv[]) {
             std::cout << "b2 = " << b2 << std::endl;
         }
         std::cout << "Two dimensional integral counting..." << std::endl;
-    }
-    else
+    } else { 
         std::cout << "One dimensional integral counting..." << std::endl;
-
+    }
 
     if (a2 == INFINITY || b2 == INFINITY) {
         res_middle = middle_rectangle_integral(a1, b1, h);
         res_left = left_rectangle_integral(a1, b1, h);
         res_right = right_rectangle_integral(a1, b1, h);
-    }
-    else {
+    } else {
         res_middle = middle_rectangle_integral(a1, b1, a2, b2, h);
         res_left = left_rectangle_integral(a1, b1, a2, b2, h);
         res_right = right_rectangle_integral(a1, b1, a2, b2, h);
