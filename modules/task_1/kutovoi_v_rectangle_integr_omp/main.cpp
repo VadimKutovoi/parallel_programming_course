@@ -1,3 +1,4 @@
+//Copyright 2019 Kutovoi Vadim
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -112,7 +113,7 @@ double right_rectangle_integral(const double a1, const double b1, const double a
 char* getCmdOption(char **begin, char **end, const std::string& option) {
     char **itr = std::find(begin, end, option);
     if (itr != end && ++itr != end)
-        return *itr;   
+        return *itr;
     return 0;
 }
 
@@ -158,7 +159,7 @@ int main(int argc, char *argv[]) {
     if (cmdOptionExists(argv, argv + argc, "-v")) {
         verbose = true;
     }
-    
+
     if (cmdOptionExists(argv, argv + argc, "-log")) {
         log = true;
     }
@@ -177,7 +178,7 @@ int main(int argc, char *argv[]) {
             std::cout << "b2 = " << b2 << std::endl;
         }
         std::cout << "Two dimensional integral counting..." << std::endl;
-    } else { 
+    } else {
         std::cout << "One dimensional integral counting..." << std::endl;
     }
 
