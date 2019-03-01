@@ -1,0 +1,1 @@
+set(PROJECT_NAME "kutovoi_v_rectangle_integr_omp")
