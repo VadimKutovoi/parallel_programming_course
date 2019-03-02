@@ -48,7 +48,6 @@ double middle_rectangle_integral(const double a1, const double b1, const double 
 double middle_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h) {
     double sum = 0;
     double height = 0;
-    double *heights = new double[4];
 
     for (double i = a1; i < b1; i += h) {
         for (double j = a2; j < b2; j += h) {
@@ -98,7 +97,6 @@ double right_rectangle_integral(const double a1, const double b1, const double h
 double right_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h) {
     double sum = 0;
     double height = 0;
-    double *heights = new double[4];
 
     for (double i = a1; i < b1; i += h)
         for (double j = a2; j < b2; j += h) {
