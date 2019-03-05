@@ -87,7 +87,7 @@ double right_rectangle_integral(const double a1, const double b1, const double h
     double height = 0;
 
     for (double i = a1; i < b1; i += h) {
-        height = f(i);
+        height = f(i + h);
         sum += height * h;
     }
 
