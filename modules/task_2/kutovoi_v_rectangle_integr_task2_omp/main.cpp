@@ -29,38 +29,38 @@ inline double f(double x, double y) {
 }
 
 double middle_rectangle_integral(const double a1, const double b1, const double h) {
-	double sum = 0;
-	int i = 0;
+    double sum = 0;
+    int i = 0;
 
 #pragma omp parallel
-	{
-		if (omp_get_thread_num() == 0)
-			std::cout << "Threads : " << omp_get_num_threads() << std::endl;
+    {
+        if (omp_get_thread_num() == 0)
+            std::cout << "Threads : " << omp_get_num_threads() << std::endl;
 
 #pragma omp for private(i) reduction(+: sum)
-		for (i = 0; i < int((b1 - a1) / h); i++) {
-			sum += f(a1 + i * h) * h;
-		}
-	}
+        for (i = 0; i < int((b1 - a1) / h); i++) {
+            sum += f(a1 + i * h) * h;
+        }
+    }
     return sum;
 }
 
 double middle_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h) {
-	double sum = 0;
-	int i, j = 0;
+    double sum = 0;
+    int i, j = 0;
 
 #pragma omp parallel
-	{
-		if (omp_get_thread_num() == 0)
-			std::cout << "Threads : " << omp_get_num_threads() << std::endl;
+    {
+        if (omp_get_thread_num() == 0)
+            std::cout << "Threads : " << omp_get_num_threads() << std::endl;
 
 #pragma omp for private(i, j) reduction(+: sum)
-		for (i = 0; i < int((b1 - a1) / h); i++)
-			for (j = 0; j < int((b2 - a2) / h); j++) {
-				sum += f(a1 + i * h, a2 + j * h) * h * h;
-			}
-	}
-	return sum;
+        for (i = 0; i < int((b1 - a1) / h); i++)
+            for (j = 0; j < int((b2 - a2) / h); j++) {
+                sum += f(a1 + i * h, a2 + j * h) * h * h;
+            }
+    }
+    return sum;
 }
 
 char* getCmdOption(char **begin, char **end, const std::string& option) {
@@ -136,18 +136,18 @@ int main(int argc, char *argv[]) {
     }
 
     if (a2 == INFINITY || b2 == INFINITY) {
-		double time = omp_get_wtime();
+        double time = omp_get_wtime();
         res_middle = middle_rectangle_integral(a1, b1, h);
-		time = omp_get_wtime() - time;
+        time = omp_get_wtime() - time;
     } else {
-		double time = omp_get_wtime();
+        double time = omp_get_wtime();
         res_middle = middle_rectangle_integral(a1, b1, a2, b2, h);
-		time = omp_get_wtime() - time;
+        time = omp_get_wtime() - time;
     }
 
     std::cout << "Middle rectangle method : " << res_middle << std::endl;
 
-	std::cout << "Time : " << time << std::endl;
+    std::cout << "Time : " << time << std::endl;
 
     if (log) {
         std::fstream log;
