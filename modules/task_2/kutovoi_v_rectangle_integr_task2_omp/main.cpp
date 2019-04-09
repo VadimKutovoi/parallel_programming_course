@@ -76,11 +76,11 @@ bool cmdOptionExists(char** begin, char** end, const std::string& option) {
 
 int main(int argc, char *argv[]) {
     double a1 = 0;
-    double b1 = 10;
+    double b1 = 16;
     double a2 = INFINITY;
     double b2 = INFINITY;
     double h = 0.1;
-    double res_middle = 0, res_left = 0, res_right = 0;
+    double res_middle = 0;
     bool verbose = false;
     bool log = false;
 
