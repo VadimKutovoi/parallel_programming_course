@@ -38,7 +38,7 @@ double middle_rectangle_integral(const double a1, const double b1, const double 
             std::cout << "Threads : " << omp_get_num_threads() << std::endl;
 
 #pragma omp for private(i) reduction(+: sum)
-        for (i = 0; i < int((b1 - a1) / h); i++) {
+        for (i = 0; i < static_cast<int>((b1 - a1) / h); i++) {
             sum += f(a1 + i * h) * h;
         }
     }
@@ -55,8 +55,8 @@ double middle_rectangle_integral(const double a1, const double b1, const double 
             std::cout << "Threads : " << omp_get_num_threads() << std::endl;
 
 #pragma omp for private(i, j) reduction(+: sum)
-        for (i = 0; i < int((b1 - a1) / h); i++)
-            for (j = 0; j < int((b2 - a2) / h); j++) {
+        for (i = 0; i < static_cast<int>((b1 - a1) / h); i++)
+            for (j = 0; j < static_cast<int>((b2 - a2) / h); j++) {
                 sum += f(a1 + i * h, a2 + j * h) * h * h;
             }
     }
@@ -76,7 +76,7 @@ bool cmdOptionExists(char** begin, char** end, const std::string& option) {
 
 int main(int argc, char *argv[]) {
     double a1 = 0;
-    double b1 = 16;
+    double b1 = 10;
     double a2 = INFINITY;
     double b2 = INFINITY;
     double h = 0.1;
@@ -135,15 +135,13 @@ int main(int argc, char *argv[]) {
         std::cout << "One dimensional integral counting..." << std::endl;
     }
 
+    double time = omp_get_wtime();
     if (a2 == INFINITY || b2 == INFINITY) {
-        double time = omp_get_wtime();
         res_middle = middle_rectangle_integral(a1, b1, h);
-        time = omp_get_wtime() - time;
     } else {
-        double time = omp_get_wtime();
         res_middle = middle_rectangle_integral(a1, b1, a2, b2, h);
-        time = omp_get_wtime() - time;
     }
+    time = omp_get_wtime() - time;
 
     std::cout << "Middle rectangle method : " << res_middle << std::endl;
 
