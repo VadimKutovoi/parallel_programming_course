@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <omp.h>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -12,12 +13,6 @@
 
 double middle_rectangle_integral(const double a1, const double b1, const double h);
 double middle_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h);
-
-double left_rectangle_integral(const double a1, const double b1, const double h);
-double left_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h);
-
-double right_rectangle_integral(const double a1, const double b1, const double h);
-double right_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h);
 
 inline double f(double x);
 inline double f(double x, double y);
@@ -34,94 +29,38 @@ inline double f(double x, double y) {
 }
 
 double middle_rectangle_integral(const double a1, const double b1, const double h) {
-    double sum = 0;
-    double height = 0;
+	double sum = 0;
+	int i = 0;
 
-#pragma omp parallel for private(i) reduction(+: sum)
-    for (double i = a1; i < b1; i += h) {
-        height = f(i + h / 2);
-        sum += height * h;
-    }
+#pragma omp parallel
+	{
+		if (omp_get_thread_num() == 0)
+			std::cout << "Threads : " << omp_get_num_threads() << std::endl;
 
+#pragma omp for private(i) reduction(+: sum)
+		for (i = 0; i < int((b1 - a1) / h); i++) {
+			sum += f(a1 + i * h) * h;
+		}
+	}
     return sum;
 }
 
 double middle_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h) {
-    double sum = 0;
-    double height = 0;
+	double sum = 0;
+	int i, j = 0;
 
 #pragma omp parallel
-	if (omp_get_thread_num() == 0)
-		std::cout << "NumOfThreads = " << omp_get_num_threads() << std::endl;
+	{
+		if (omp_get_thread_num() == 0)
+			std::cout << "Threads : " << omp_get_num_threads() << std::endl;
 
 #pragma omp for private(i, j) reduction(+: sum)
-    for (double i = a1; i < b1; i += h) {
-        for (double j = a2; j < b2; j += h) {
-            height = f(i + h / 2, j + h / 2);
-            sum += height * h * h;
-        }
-    }
-    return sum;
-}
-
-double left_rectangle_integral(const double a1, const double b1, const double h) {
-    double sum = 0;
-    double height = 0;
-
-#pragma omp parallel for private(i) reduction(+: sum)
-    for (double i = a1; i < b1; i += h) {
-        height = f(i);
-        sum += height * h;
-    }
-
-    return sum;
-}
-
-double left_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h) {
-    double sum = 0;
-    double height = 0;
-
-#pragma omp parallel
-	if (omp_get_thread_num() == 0)
-		std::cout << "NumOfThreads = " << omp_get_num_threads() << std::endl;
-
-#pragma omp for private(i, j) reduction(+: sum)
-    for (double i = a1; i < b1; i += h)
-        for (double j = a2; j < b2; j += h) {
-            height = f(i, j);
-            sum += height * h * h;
-        }
-    return sum;
-}
-
-double right_rectangle_integral(const double a1, const double b1, const double h) {
-    double sum = 0;
-    double height = 0;
-
-#pragma omp parallel for private(i) reduction(+: sum)
-    for (double i = a1; i < b1; i += h) {
-        height = f(i);
-        sum += height * h;
-    }
-
-    return sum;
-}
-
-double right_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h) {
-    double sum = 0;
-    double height = 0;
-
-#pragma omp parallel
-	if (omp_get_thread_num() == 0)
-		std::cout << "NumOfThreads = " << omp_get_num_threads() << std::endl;
-
-#pragma omp for private(i, j) reduction(+: sum)
-    for (double i = a1; i < b1; i += h)
-        for (double j = a2; j < b2; j += h) {
-            height = f(i + h, j + h);
-            sum += height * h * h;
-        }
-    return sum;
+		for (i = 0; i < int((b1 - a1) / h); i++)
+			for (j = 0; j < int((b2 - a2) / h); j++) {
+				sum += f(a1 + i * h, a2 + j * h) * h * h;
+			}
+	}
+	return sum;
 }
 
 char* getCmdOption(char **begin, char **end, const std::string& option) {
@@ -199,20 +138,14 @@ int main(int argc, char *argv[]) {
     if (a2 == INFINITY || b2 == INFINITY) {
 		double time = omp_get_wtime();
         res_middle = middle_rectangle_integral(a1, b1, h);
-        // res_left = left_rectangle_integral(a1, b1, h);
-        // res_right = right_rectangle_integral(a1, b1, h);
 		time = omp_get_wtime() - time;
     } else {
 		double time = omp_get_wtime();
         res_middle = middle_rectangle_integral(a1, b1, a2, b2, h);
-        // res_left = left_rectangle_integral(a1, b1, a2, b2, h);
-        // res_right = right_rectangle_integral(a1, b1, a2, b2, h);
 		time = omp_get_wtime() - time;
     }
 
     std::cout << "Middle rectangle method : " << res_middle << std::endl;
-    // std::cout << "Left rectangle method : " << res_left << std::endl;
-    // std::cout << "Right rectangle method : " << res_right << std::endl;
 
 	std::cout << "Time : " << time << std::endl;
 
@@ -220,8 +153,6 @@ int main(int argc, char *argv[]) {
         std::fstream log;
         log.open("log.txt", std::ios::out | std::ios::app);
         log << "Middle rectangle method : " << res_middle << std::endl;
-        // log << "Left rectangle method : " << res_left << std::endl;
-        // log << "Right rectangle method : " << res_right << std::endl;
         log.close();
     }
 

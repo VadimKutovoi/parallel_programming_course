@@ -1,4 +1,4 @@
-set(PROJECT_NAME "kutovoi_v_rectangle_integr_omp")
+set(PROJECT_NAME "kutovoi_v_rectangle_integr_task2_omp")
 
 if ( USE_OMP )
     project( ${PROJECT_NAME} )
