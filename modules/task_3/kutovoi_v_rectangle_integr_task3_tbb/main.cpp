@@ -1,10 +1,5 @@
 // Copyright 2019 Kutovoi Vadim
 
-#include <iostream>
-#include <fstream>
-#include <algorithm>
-#include <string>
-
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,9 +7,16 @@
 #include <tbb/tbb.h>
 #include <tbb/tick_count.h>
 
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <string>
 
-double middle_rectangle_integral(const double a1, const double b1, const double h);
-double middle_rectangle_integral(const double a1, const double b1, const double a2, const double b2, const double h);
+
+double middle_rectangle_integral(const double a1, const double b1,
+                                                  const double h);
+double middle_rectangle_integral(const double a1, const double b1,
+                const double a2, const double b2, const double h);
 
 inline double f(double x);
 inline double f(double x, double y);
@@ -23,12 +25,13 @@ char* getCmdOption(char ** begin, char ** end, const std::string& option);
 bool cmdOptionExists(char** begin, char** end, const std::string& option);
 
 class Integrator {
- private: 
+ private:
     double a1, b1, h, res;
- public: 
+
+ public:
     explicit Integrator(double ta1, double tb1,
         double th) : a1(ta1), b1(tb1), h(th), res(0) {}
-    
+
     Integrator(Integrator& m, tbb::split) : a1(m.a1), h(m.h), res(0) {
         double middle = (m.b1 - m.a1) / 2;
         b1 = middle;
@@ -44,7 +47,7 @@ class Integrator {
         res += integrator.res;
     }
 
-    double Result() { 
+    double Result() {
         return res;
     }
 };
@@ -52,11 +55,13 @@ class Integrator {
 class Integrator2D {
  private:
     double a1, b1, a2, b2, h, res;
+
  public:
     explicit Integrator2D(double ta1, double tb1, double ta2, double tb2,
         double th) : a1(ta1), b1(tb1), a2(ta2), b2(tb2), h(th), res(0) {}
 
-    Integrator2D(Integrator2D& m, tbb::split) : a1(m.a1), a2(m.a2), h(m.h), res(0) {
+    Integrator2D(Integrator2D& m, tbb::split) :
+     a1(m.a1), a2(m.a2), h(m.h), res(0) {
         double middle1 = (m.b1 - m.a1) / 2;
         double middle2 = (m.b2 - m.a2) / 2;
         b1 = middle1;
@@ -89,18 +94,20 @@ inline double f(double x, double y) {
     return sin(x) * cos(y);
 }
 
-double middle_rectangle_integral(const double a1, const double b1, const double h) {
+double middle_rectangle_integral(const double a1, const double b1,
+                                                  const double h) {
     double sum = 0;
     int i = 0;
 
     for (i = 0; i < static_cast<int>((b1 - a1) / h); i++) {
         sum += f(a1 + i * h) * h;
     }
-    
+
     return sum;
 }
 
-double middle_rectangle_integral(const double a1, const double b1, double a2, double b2, double h) {
+double middle_rectangle_integral(const double a1, const double b1,
+                                 double a2, double b2, double h) {
     double sum = 0;
     int i, j = 0;
 
@@ -197,20 +204,26 @@ int main(int argc, char *argv[]) {
         size_t GrainSize2 = static_cast<size_t>((b2 - a2) / num_threads + 1);
 
         t0 = tbb::tick_count::now();
-        tbb::parallel_reduce(tbb::blocked_range2d<double>(a1, b1, GrainSize1, a2, b2, GrainSize2), integr);
+        tbb::parallel_reduce(tbb::blocked_range2d<double>(a1, b1,
+                         GrainSize1, a2, b2, GrainSize2), integr);
         t1 = tbb::tick_count::now();
 
-        std::cout << "Middle rectangle method : " << integr.Result() << std::endl;
+        std::cout << "Middle rectangle method : " <<
+                      integr.Result()
+                  << std::endl;
     } else {
         std::cout << "One dimensional integral counting..." << std::endl;
 
         Integrator integr(a1, b1, h);
 
         t0 = tbb::tick_count::now();
-        tbb::parallel_reduce(tbb::blocked_range<double>(a1, b1, GrainSize1), integr);
+        tbb::parallel_reduce(tbb::blocked_range<double>(a1, b1,
+                                           GrainSize1), integr);
         t1 = tbb::tick_count::now();
 
-        std::cout << "Middle rectangle method : " << integr.Result() << std::endl;
+        std::cout << "Middle rectangle method : " <<
+                      integr.Result()
+                  << std::endl;
     }
 
     std::cout << "Time : " << (t1 - t0).seconds() << std::endl;
